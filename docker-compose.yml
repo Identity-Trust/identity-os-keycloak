@@ -1,8 +1,8 @@
 services:
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: identity-os-keycloak
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-26.7.1}
+    container_name: ${KEYCLOAK_CONTAINER_NAME:-identity-os-keycloak}
 
     command:
       - start-dev
@@ -10,11 +10,11 @@ services:
       - --import-realm
 
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
 
     ports:
-      - "8085:8080"
+      - "${KEYCLOAK_PORT:-8085}:8080"
 
     volumes:
       - ./keycloak:/opt/keycloak/data/import
