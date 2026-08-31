@@ -36,7 +36,15 @@ foreach ($mapperName in $requiredAppUserMappers) {
     }
 }
 
+if (-not $realm.smtpServer -or [string]::IsNullOrWhiteSpace($realm.smtpServer.from)) {
+    throw "Realm SMTP sender is missing. Configure smtpServer.from for Keycloak action emails."
+}
+if ([string]::IsNullOrWhiteSpace($realm.smtpServer.host) -or [string]::IsNullOrWhiteSpace($realm.smtpServer.port)) {
+    throw "Realm SMTP host/port is missing. Configure Mailpit SMTP settings."
+}
+
 Write-Host "Identity OS Keycloak realm export is valid." -ForegroundColor Green
 Write-Host "Realm: $($realm.realm)"
 Write-Host "Clients: $($requiredClients -join ', ')"
 Write-Host "Roles: $($requiredRoles -join ', ')"
+Write-Host "SMTP: $($realm.smtpServer.from) via $($realm.smtpServer.host):$($realm.smtpServer.port)"

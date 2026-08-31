@@ -36,6 +36,14 @@ Validate the committed realm export:
 .\validate-realm.ps1
 ```
 
+Start Mailpit from the parent backend folder:
+
+```powershell
+cd ..
+docker compose -f docker-compose.mailpit.yml up -d
+cd identity-os-keycloak
+```
+
 Start Keycloak:
 
 ```bash
@@ -67,6 +75,63 @@ docker compose up -d
 ```
 
 This deletes local Keycloak data for this compose project.
+
+## Email Configuration
+
+The realm export is configured to send Keycloak action emails through Mailpit:
+
+```text
+SMTP host: host.docker.internal
+SMTP port: 1025
+From: no-reply@identity-os.local
+Auth: off
+TLS/SSL: off
+```
+
+Mailpit UI:
+
+```text
+http://localhost:8025
+```
+
+If Keycloak shows this error:
+
+```text
+Invalid sender address 'null'
+```
+
+then the realm was imported before SMTP settings were added, or the current realm has no `From` email address.
+
+Fix option 1, clean local setup:
+
+```powershell
+docker compose down -v
+cd ..
+docker compose -f docker-compose.mailpit.yml up -d
+cd identity-os-keycloak
+docker compose up -d
+```
+
+Fix option 2, manual Keycloak UI:
+
+Open `http://localhost:8085`, switch to realm `identity-os`, then go to:
+
+```text
+Realm settings -> Email
+```
+
+Set:
+
+```text
+From: no-reply@identity-os.local
+Host: host.docker.internal
+Port: 1025
+Authentication: Off
+Enable SSL: Off
+Enable StartTLS: Off
+```
+
+Then click `Test connection`.
 
 ## Identity OS Service Configuration
 
